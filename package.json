@@ -12,7 +12,7 @@
     "scan": "yarn eslint src && yarn check-types && yarn test",
     "equip": "yarn pretty && yarn scan",
     "compile": "tsc",
-    "start": "yarn compile && node ./dist/index.js"
+    "start": "yarn compile && node ./dist/server.js"
   },
   "dependencies": {
     "@apollo/server": "^4.10.5",
