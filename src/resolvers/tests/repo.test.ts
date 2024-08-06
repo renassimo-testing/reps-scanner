@@ -1,3 +1,4 @@
+import QueueSerice from '../../services/QueueSerice';
 import GitHubService from '../../services/GitHubService';
 import getRepoResolver from '../repo';
 
@@ -12,7 +13,11 @@ describe('getRepoResolver', () => {
     const mockedGithubService = {
       getRepo: mockedGetRepo,
     } as unknown as GitHubService;
-    const resolver = getRepoResolver(mockedGithubService);
+    const mockedAddAndResolve = jest.fn((func) => func());
+    const mockedQueueSerice = {
+      addAndResolve: mockedAddAndResolve
+    } as unknown as QueueSerice
+    const resolver = getRepoResolver(mockedGithubService, mockedQueueSerice);
     // Act
     const result = await resolver(undefined, {
       token: mockedToken,
@@ -26,5 +31,6 @@ describe('getRepoResolver', () => {
       mockedName,
       mockedOwner
     );
+    expect(mockedAddAndResolve).toHaveBeenCalledWith(expect.any(Function));
   });
 });
