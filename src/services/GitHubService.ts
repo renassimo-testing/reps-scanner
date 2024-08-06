@@ -1,5 +1,10 @@
 import { Octokit } from '@octokit/rest';
-import { Organization, Repository, Webhook, TreeItem } from '../types/githubTypes';
+import {
+  Organization,
+  Repository,
+  Webhook,
+  TreeItem,
+} from '../types/githubTypes';
 
 export default class GitHubService {
   private octokit: Octokit;
@@ -127,7 +132,14 @@ export default class GitHubService {
     return `
         {
           repository(name: "${name}", owner: "${owner}") {
-            ${this.baseRepoQuery}
+            id
+            name
+            size: diskUsage
+            owner {
+              id
+              login
+            }
+            visibility
           }
         }
       `;
@@ -140,24 +152,18 @@ export default class GitHubService {
             id
             repositories(first: 10) {
               nodes {
-                ${this.baseRepoQuery}
+                id
+                name
+                size: diskUsage
+                owner {
+                  id
+                  login
+                }
+                visibility
               }
             }
           }
         }
       `;
-  }
-
-  private get baseRepoQuery(): string {
-    return `
-      id
-      name
-      size: diskUsage
-      owner {
-        id
-        login
-      }
-      visibility
-    `;
   }
 }
