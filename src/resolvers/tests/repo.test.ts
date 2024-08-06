@@ -15,8 +15,8 @@ describe('getRepoResolver', () => {
     } as unknown as GitHubService;
     const mockedAddAndResolve = jest.fn((func) => func());
     const mockedQueueSerice = {
-      addAndResolve: mockedAddAndResolve
-    } as unknown as QueueSerice
+      addAndResolve: mockedAddAndResolve,
+    } as unknown as QueueSerice;
     const resolver = getRepoResolver(mockedGithubService, mockedQueueSerice);
     // Act
     const result = await resolver(undefined, {

@@ -10,6 +10,8 @@ export default class QueueService {
   async addAndResolve<Result>(
     resolver: () => Promise<Result>
   ): Promise<Result> {
-    return await this.queue.add(async () => await resolver()) as Awaited<Result>
+    return (await this.queue.add(
+      async () => await resolver()
+    )) as Awaited<Result>;
   }
 }
