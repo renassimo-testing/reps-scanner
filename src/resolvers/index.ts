@@ -1,18 +1,17 @@
 // Resolvers define how to fetch the types defined in your schema.
-// This resolver retrieves books from the "books" array above.
-const resolvers = {
-  Query: {
-    books: () => [
-      {
-        title: 'The Awakening',
-        author: 'Kate Chopin',
-      },
-      {
-        title: 'City of Glass',
-        author: 'Paul Auster',
-      },
-    ],
-  },
+import GitHubService from '../services/GitHubService.js';
+import getRepoResolver from './repo.js';
+import getReposResolver from './repos.js';
+
+const getResolvers = () => {
+  const githubService = new GitHubService();
+
+  return {
+    Query: {
+      repos: getReposResolver(githubService),
+      repo: getRepoResolver(githubService),
+    },
+  };
 };
 
-export default resolvers;
+export default getResolvers();
