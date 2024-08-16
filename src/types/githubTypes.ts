@@ -20,11 +20,13 @@ export interface Repository {
   webhooks: Webhook[];
 }
 
-export interface Organization {
+export interface Viewer {
   id: string;
+  login: string;
   repositories: {
     nodes: Repository[];
   };
+  repository: Repository;
 }
 
 export interface TreeItem {

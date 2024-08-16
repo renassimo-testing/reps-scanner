@@ -7,7 +7,6 @@ describe('getRepoResolver', () => {
     // Arange
     const mockedToken = 'mocked-token';
     const mockedName = 'mocked-name';
-    const mockedOwner = 'mocked-owner';
     const mockedRepos = 'mocked-repos';
     const mockedGetRepo = jest.fn(() => mockedRepos);
     const mockedGithubService = {
@@ -22,14 +21,12 @@ describe('getRepoResolver', () => {
     const result = await resolver(undefined, {
       token: mockedToken,
       name: mockedName,
-      owner: mockedOwner,
     });
     // Assert
     expect(result).toEqual(mockedRepos);
     expect(mockedGetRepo).toHaveBeenCalledWith(
       mockedToken,
       mockedName,
-      mockedOwner
     );
     expect(mockedAddAndResolve).toHaveBeenCalledWith(expect.any(Function));
   });

@@ -6,10 +6,10 @@ const getRepoResolver =
   (githubService: GitHubService, queueSerice: QueueService) =>
   async (
     _,
-    { token, name, owner }: { token: string; name: string; owner: string }
+    { token, name }: { token: string; name: string; }
   ): Promise<Repository> => {
     return await queueSerice.addAndResolve<Repository>(
-      async () => await githubService.getRepo(token, name, owner)
+      async () => await githubService.getRepo(token, name)
     );
   };
 
