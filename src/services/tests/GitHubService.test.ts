@@ -1,12 +1,14 @@
 import GitHubService from '../GitHubService';
 
 const mockedNodes = 'mocked-nodes';
-const mockedOrganization = { repositories: { nodes: 'mocked-nodes' } };
 const mockedRepoId = 'mocked-repo-id';
 const mockedRepository = { id: mockedRepoId };
-const mockedGraphql = jest.fn(() => ({
-  organization: mockedOrganization,
+const mockedViewer = {
+  repositories: { nodes: 'mocked-nodes' },
   repository: mockedRepository,
+};
+const mockedGraphql = jest.fn(() => ({
+  viewer: mockedViewer,
 }));
 const mockedWebhooks = 'mocked-webhooks';
 const mockedListWebhooks = jest.fn(() => ({
@@ -77,22 +79,25 @@ describe('GitHubService', () => {
   const expectedAuthOptions = {
     headers: { authorization: `bearer ${mockedToken}` },
   };
-  mockedOrganization.repositories.nodes = mockedNodes;
+  mockedViewer.repositories.nodes = mockedNodes;
 
   const githubService = new GitHubService();
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   describe('when getRepos called', () => {
     test('returns repos', async () => {
       // Arange
-      const mockedLogin = 'mocked-login';
       // Act
-      const result = await githubService.getRepos(mockedToken, mockedLogin);
+      const result = await githubService.getRepos(mockedToken);
       // Assert
       expect(result).toEqual(mockedNodes);
       expect(mockedGraphql).toHaveBeenCalledWith(
         `
         {
-          organization(login: "${mockedLogin}") {
+          viewer {
             id
             repositories(first: 10) {
               nodes {
@@ -118,7 +123,6 @@ describe('GitHubService', () => {
     test('returns repo', async () => {
       // Arange
       const mockedName = 'mocked-name';
-      const mockedOwner = 'mocked-owner';
       const expectedResult = {
         id: mockedRepoId,
         webhooks: mockedWebhooks,
@@ -126,25 +130,25 @@ describe('GitHubService', () => {
         ymlContent: mockedYmlContent,
       };
       // Act
-      const result = await githubService.getRepo(
-        mockedToken,
-        mockedName,
-        mockedOwner
-      );
+      const result = await githubService.getRepo(mockedToken, mockedName);
       // Assert
       expect(result).toEqual(expectedResult);
       expect(mockedGraphql).toHaveBeenCalledWith(
         `
         {
-          repository(name: "${mockedName}", owner: "${mockedOwner}") {
+          viewer {
             id
-            name
-            size: diskUsage
-            owner {
+            login
+            repository(name: "${mockedName}") {
               id
-              login
+              name
+              size: diskUsage
+              owner {
+                id
+                login
+              }
+              visibility
             }
-            visibility
           }
         }
       `,

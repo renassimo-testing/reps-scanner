@@ -21,8 +21,8 @@ Copy and paste to test it
 ### Get repos
 
 ```
-query GetRepos($token: String!, $orgLogin: String!) {
-  repos(token: $token, orgLogin: $orgLogin) {
+query GetRepos($token: String!) {
+  repos(token: $token) {
     id
     name
     size
@@ -37,8 +37,8 @@ query GetRepos($token: String!, $orgLogin: String!) {
 ### Get repo
 
 ```
-query GetRepo($token: String!, $name: String!, $owner: String!) {
-  repo(token: $token, name: $name, owner: $owner) {
+query GetRepo($token: String!, $name: String!) {
+  repo(token: $token, name: $name) {
     id
     name
     size

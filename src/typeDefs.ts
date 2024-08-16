@@ -23,8 +23,8 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    repos(token: String!, orgLogin: String!): [Repo]
-    repo(token: String!, name: String!, owner: String!): Repo
+    repos(token: String!): [Repo]
+    repo(token: String!, name: String!): Repo
   }
 `;
 

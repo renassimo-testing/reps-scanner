@@ -2,8 +2,8 @@ import GitHubService from '../services/GitHubService.js';
 
 const getReposResolver =
   (githubService: GitHubService) =>
-  async (_, { token, orgLogin }: { token: string; orgLogin: string }) => {
-    const reps = await githubService.getRepos(token, orgLogin);
+  async (_, { token }: { token: string; }) => {
+    const reps = await githubService.getRepos(token);
 
     return reps;
   };

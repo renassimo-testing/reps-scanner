@@ -1,10 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import {
-  Organization,
-  Repository,
-  Webhook,
-  TreeItem,
-} from '../types/githubTypes';
+import { Viewer, Repository, Webhook, TreeItem } from '../types/githubTypes';
 
 export default class GitHubService {
   private octokit: Octokit;
@@ -13,40 +8,34 @@ export default class GitHubService {
     this.octokit = new Octokit();
   }
 
-  async getRepo(
-    token: string,
-    name: string,
-    owner: string
-  ): Promise<Repository> {
-    const [repository, webhooks, [filesCount, ymlContent]] = await Promise.all([
-      this.getRepository(token, name, owner),
-      this.getWebhooks(token, name, owner),
-      this.getYmlAndFilesCount(token, name, owner),
+  async getRepo(token: string, name: string): Promise<Repository> {
+    const { repository, login } = await this.getRepository(token, name);
+    const [webhooks, [filesCount, ymlContent]] = await Promise.all([
+      this.getWebhooks(token, name, login),
+      this.getYmlAndFilesCount(token, name, login),
     ]);
 
     return { ...repository, webhooks, filesCount, ymlContent };
   }
 
-  async getRepos(token: string, login: string): Promise<Repository[]> {
-    const { organization }: { organization: Organization } =
-      await this.octokit.graphql(
-        this.getReposQuery(login),
-        this.getAuthOptions(token)
-      );
-    return organization.repositories.nodes;
+  async getRepos(token: string): Promise<Repository[]> {
+    const { viewer }: { viewer: Viewer } = await this.octokit.graphql(
+      this.getReposQuery(),
+      this.getAuthOptions(token)
+    );
+    return viewer.repositories.nodes;
   }
 
   private async getRepository(
     token: string,
-    name: string,
-    owner: string
-  ): Promise<Repository> {
-    const { repository }: { repository: Repository } =
+    name: string
+  ): Promise<Viewer> {
+    const { viewer }: { viewer: Viewer; } =
       await this.octokit.graphql(
-        this.getRepoQuery(name, owner),
+        this.getRepoQuery(name),
         this.getAuthOptions(token)
       );
-    return repository;
+    return viewer;
   }
 
   private async getWebhooks(
@@ -128,27 +117,31 @@ export default class GitHubService {
     };
   }
 
-  private getRepoQuery(name: string, owner: string): string {
+  private getRepoQuery(name: string): string {
     return `
         {
-          repository(name: "${name}", owner: "${owner}") {
+          viewer {
             id
-            name
-            size: diskUsage
-            owner {
+            login
+            repository(name: "${name}") {
               id
-              login
+              name
+              size: diskUsage
+              owner {
+                id
+                login
+              }
+              visibility
             }
-            visibility
           }
         }
       `;
   }
 
-  private getReposQuery(login: string): string {
+  private getReposQuery(): string {
     return `
         {
-          organization(login: "${login}") {
+          viewer {
             id
             repositories(first: 10) {
               nodes {
